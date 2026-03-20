@@ -29,8 +29,9 @@ The system follows a standard RAG pipeline:
 1. **Set Environment Variables:**
    Create a `.env` file in the root directory:
    ```text
-   TELEGRAM_BOT_TOKEN=your_telegram_token
-   GROQ_API_KEY=your_groq_api_key
+   TELEGRAM_BOT_TOKEN=your_bot_token
+   EMBED_MODEL_NAME=all-MiniLM-L6-v2
+   GROQ_API_KEY=your_groq_token
    LLM_MODEL_NAME=llama-3.1-8b-instant
    
 Launch the Container:
