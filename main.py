@@ -1,9 +1,34 @@
 import os
 import logging
 import asyncio
+import threading
+from http.server import BaseHTTPRequestHandler, HTTPServer
 from dotenv import load_dotenv
 from telegram import Update
 from telegram.ext import ApplicationBuilder, CommandHandler, ContextTypes
+
+# 1. Define the Handler Class
+class HealthCheckHandler(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200)
+        self.end_headers()
+        self.wfile.write(b"Bot is alive!")
+    
+    # Silence the logs so they don't clutter Telegram bot logs
+    def log_message(self, format, *args):
+        return
+
+# 2. Define the Server Starter
+def run_health_check():
+    # Render assigns a dynamic port via the PORT env var
+    port = int(os.environ.get("PORT", 7860)) 
+    server = HTTPServer(('0.0.0.0', port), HealthCheckHandler)
+    print(f"Health check server started on port {port}")
+    server.serve_forever()
+
+# 3. START THE THREAD BEFORE ANYTHING ELSE
+# This allows the health check to run while the bot initializes
+threading.Thread(target=run_health_check, daemon=True).start()
 
 import engine
 

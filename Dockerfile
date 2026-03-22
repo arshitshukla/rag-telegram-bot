@@ -16,8 +16,21 @@ RUN pip install --no-cache-dir -r requirements.txt
 # Copy the rest of the application code
 COPY . .
 
-# Create the DB directory to ensure it exists
-RUN mkdir -p db
+# --- RENDER SPECIFIC FIXES ---
+
+# 1. Ensure the DB directory is writeable by the container's user
+# Render's default user needs permission to write the SQLite-vec file
+RUN mkdir -p /app/db && chmod -R 777 /app/db
+
+# 2. Set the default Port (Render will override this, but it's good practice)
+ENV PORT=10000
+EXPOSE 10000
+
+# 3. Environment variable to help with the Torch/Transformers cache issue 
+# we saw earlier on Hugging Face (prevents the 'uid not found' error)
+ENV HOME=/tmp
+ENV TRANSFORMERS_CACHE=/tmp/cache
+RUN mkdir -p /tmp/cache && chmod -R 777 /tmp/cache
 
 # Command to run the bot
 CMD ["python", "main.py"]
